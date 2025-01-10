@@ -1,16 +1,13 @@
 package data
 
-import (
-	"time"
-
-	"github.com/gofrs/uuid/v5"
-)
+import "time"
 
 type Mailing struct {
 	ChatID		int			`json:"ID"`
-	SendTime 	time.Time	`json:"time"`
-	Date		time.Time	`json:"date"`
-	CronID		uuid.UUID	`json:"cronID"`
+	Login		string		`json:"login"`
+	LastTime	time.Time	`json:"time"`
+	Upload		int64		`json:"upload"`
+	Download	int64		`json:"download"`
 }
 
 type Command struct{
