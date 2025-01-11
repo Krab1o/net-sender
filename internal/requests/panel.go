@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"time"
 )
 
 type Site struct {
@@ -48,21 +49,25 @@ func (s *Site) GetClientRequest(email string) (*data.ClientData, error) {
 			s.Host + ":" + 
 			s.Port + "/" + 
 			s.Panel + "/panel/api/inbounds/getClientTraffics/" +
-			email
+			email[len("vless-reality-"):]
 			
 	req, err := http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {
 		log.Println(err.Error())
 	}
+
+	if s.Cookie.Expires.Before(time.Now()) {
+		s.LoginRequest()
+	}
 	req.AddCookie(s.Cookie)
-	
+
+	d := &data.ClientData{}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Println(err)
 	}
-
-	d := &data.ClientData{}
 	json.NewDecoder(resp.Body).Decode(d)
+	
 	if d.Obj == nil {
 		return &data.ClientData{}, errors.New("Указан несуществующий логин")
 	}

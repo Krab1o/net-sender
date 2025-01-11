@@ -1,0 +1,12 @@
+version: '3.9'
+
+services:
+  tg-bot:
+    build: .
+    image: net-sender-bot
+    ports:
+    - "8080:8080"
+    environment:
+    - TZ=${TZ}
+    volumes:
+    - "./data:/app/net-sender/data"

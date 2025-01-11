@@ -23,6 +23,9 @@ func parseCommand(message string) (string, bool) {
 	return data.None.String(), false
 }
 
+//TODO: docker compose
+//TODO: add database/redis
+
 func main() {
 	err := godotenv.Load(".env")
   	if err != nil {
@@ -50,7 +53,7 @@ func main() {
 		{Title: "/help", Desc: data.HelpDescription},
 	}
 
-	db.Init()
+	db.InitDB()
 	updates := bot.InitBot(conf, commands)
 
 	for update := range updates {
@@ -70,6 +73,7 @@ func main() {
 			case "/help":
 				bot.Help(update)
 			default:
+				bot.SendMessage(update, "Неизвестная команда")
 				//do nothing
 			}
 		} else {

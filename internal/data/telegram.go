@@ -6,8 +6,8 @@ type Mailing struct {
 	ChatID		int			`json:"ID"`
 	Login		string		`json:"login"`
 	LastTime	time.Time	`json:"time"`
-	Upload		int64		`json:"upload"`
 	Download	int64		`json:"download"`
+	Upload		int64		`json:"upload"`
 }
 
 type Command struct{

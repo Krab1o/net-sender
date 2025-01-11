@@ -21,8 +21,8 @@ func SendMessage(update data.Update, msg string) {
 func SetLogin(update data.Update, site *requests.Site) {
 	login, ok := parseLogin(update.Message.Text)
 	if !ok {
-		log.Println("Не удалось распознать логин")
-		SendMessage(update, "Не удалось распознать логин")
+		log.Println("Не удалось распознать логин.")
+		SendMessage(update, "Не удалось распознать логин.")
 		return
 	}
 	mailing := &data.Mailing{
@@ -33,13 +33,19 @@ func SetLogin(update data.Update, site *requests.Site) {
 		Upload: 0,
 	}
 	
-	db.UpdateMailing(mailing)
+	err := db.InsertMailing(mailing)
+	if err != nil {
+		SendMessage(update, "Не удалось обновить информацию.")
+	} else {
+		SendMessage(update, "Логин успешно установлен.")
+	}
 }
 
 func GetLogin(update data.Update) {
 	mailing, err := db.GetMailing(update.Message.Chat.ID)
+	log.Println(mailing)
 	if err != nil {
-		SendMessage(update, "В этом чате ещё не был указан логин")
+		SendMessage(update, "В этом чате ещё не был указан логин.")
 		return
 	}
 	text := fmt.Sprintf(data.SuccessGetLoginText, mailing.Login)
@@ -48,8 +54,9 @@ func GetLogin(update data.Update) {
 
 func GetDiff(update data.Update, site *requests.Site) {
 	mailing, err := db.GetMailing(update.Message.Chat.ID)
+	fmt.Println(mailing.LastTime)
 	if err != nil {
-		SendMessage(update, err.Error())
+		SendMessage(update, "Не удалось получить данные.")
 		return
 	}
 	reqData, err := site.GetClientRequest(mailing.Login)
@@ -60,9 +67,14 @@ func GetDiff(update data.Update, site *requests.Site) {
 
 	download := formatFileSize(float64(reqData.Obj.Download - mailing.Download))
 	upload := formatFileSize(float64(reqData.Obj.Upload - mailing.Upload))
-	//TODO: логика на пустую дату 
-	parsedTime := mailing.LastTime.Format(time.RFC822)
-	msg := fmt.Sprintf(data.SuccessGetDiffText, parsedTime, download, upload)
+	var msg string
+	if mailing.LastTime.IsZero() {
+		msg = fmt.Sprintf(data.FirstGetDiffText, download, upload)
+	} else {
+		parsedTime := mailing.LastTime.Format(time.RFC822)
+		msg = fmt.Sprintf(data.SuccessGetDiffText, parsedTime, download, upload)
+	}
+	
 	SendMessage(update, msg)
 
 	mailing = &data.Mailing{
@@ -72,7 +84,10 @@ func GetDiff(update data.Update, site *requests.Site) {
 		Download : reqData.Obj.Download,
 		Upload : reqData.Obj.Upload,
 	}
-	db.UpdateMailing(mailing)
+	err = db.InsertMailing(mailing)
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func GetStat(update data.Update, site *requests.Site) {

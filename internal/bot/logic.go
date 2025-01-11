@@ -33,7 +33,7 @@ func parseLogin(msg string) (string, bool) {
 	}
 	
 	if index := expr.FindStringIndex(msg); index != nil {
-		//We take second argument right after "/set_date"
+		//We take second argument right after "command"
 		login := strings.Split(msg[index[0]:index[1]], " ")[1]
 		return login, true
 	}
