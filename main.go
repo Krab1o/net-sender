@@ -23,9 +23,6 @@ func parseCommand(message string) (string, bool) {
 	return data.None.String(), false
 }
 
-//TODO: docker compose
-//TODO: add database/redis
-
 func main() {
 	err := godotenv.Load(".env")
   	if err != nil {

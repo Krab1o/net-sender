@@ -43,7 +43,6 @@ func SetLogin(update data.Update, site *requests.Site) {
 
 func GetLogin(update data.Update) {
 	mailing, err := db.GetMailing(update.Message.Chat.ID)
-	log.Println(mailing)
 	if err != nil {
 		SendMessage(update, "В этом чате ещё не был указан логин.")
 		return
@@ -54,7 +53,6 @@ func GetLogin(update data.Update) {
 
 func GetDiff(update data.Update, site *requests.Site) {
 	mailing, err := db.GetMailing(update.Message.Chat.ID)
-	fmt.Println(mailing.LastTime)
 	if err != nil {
 		SendMessage(update, "Не удалось получить данные.")
 		return

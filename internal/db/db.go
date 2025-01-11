@@ -2,21 +2,40 @@ package db
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 	"log"
 	"net-sender/internal/data"
+	"os"
 
 	_ "github.com/mattn/go-sqlite3" // SQLite driver
 )
 
 var DB *sql.DB
+var directoryPath = "data/"
+var directoryPermissions = 0777
+
+func createDirectory() {
+	err := os.Mkdir("data", os.FileMode(directoryPermissions))
+	if err != nil {
+		log.Println(err)
+	}
+}
 
 func InitDB() {
 	var err error
+	_, err = os.Stat("data/")
+	if errors.Is(err, os.ErrNotExist) {
+		createDirectory()
+	}
 	DB, err = sql.Open("sqlite3", "data/app.db") // Open a connection to the SQLite database file named app.db
 	if err != nil {
-	 	log.Fatal(err) // Log an error and stop the program if the database can't be opened
+	 	log.Println(err) // Log an error and stop the program if the database can't be opened
 	}
-
+	err = DB.Ping()
+	if err != nil {
+		fmt.Println(err)
+	}
 	// SQL statement to create the todos table if it doesn't exist
 	sqlStmt := `
 CREATE TABLE IF NOT EXISTS Mailings (
