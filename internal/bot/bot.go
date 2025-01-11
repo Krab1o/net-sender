@@ -91,7 +91,7 @@ func GetDiff(update data.Update, site *requests.Site) {
 func GetStat(update data.Update, site *requests.Site) {
 	mailing, err := db.GetMailing(update.Message.Chat.ID)
 	if err != nil {
-		SendMessage(update, err.Error())
+		SendMessage(update, "Не удалось получить данные.")
 		return
 	}
 	reqData, err := site.GetClientRequest(mailing.Login)

@@ -56,7 +56,7 @@ func GetMailing(chatID int) (*data.Mailing, error){
 	stmt, err := DB.Prepare("SELECT * FROM Mailings WHERE chat_id = $1")
 	if err != nil {
 		log.Println("Failed to prepare query", err)
-		return &data.Mailing{}, err
+		return &data.Mailing{}, errors.New("Не удалось получить данные")
 	}
 	defer stmt.Close()
 
